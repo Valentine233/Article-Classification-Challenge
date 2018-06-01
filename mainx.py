@@ -5,19 +5,20 @@ from scipy.sparse import hstack
 import csv
 from sklearn.linear_model import LogisticRegression
 
+t = text_feature()
 g = graph_feature()
-# t = text_feature()
+
 X_train_graph = g[0]
-# X_train_text = t[0]
+X_train_text = t[0]
 y_train = g[1]
 X_test_graph = g[2]
-# X_test_text = t[2]
+X_test_text = t[2]
 
-# X_train = hstack((X_train_graph, X_train_text))
-# X_test = hstack((X_test_graph, X_test_text))
+X_train = hstack((X_train_graph, X_train_text))
+X_test = hstack((X_test_graph, X_test_text))
 
-X_train = X_train_graph
-X_test = X_test_graph
+# X_train = X_train_graph
+# X_test = X_test_graph
 
 # Read test data
 test_ids = list()
