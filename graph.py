@@ -44,22 +44,30 @@ def graph_feature():
 
     avg_neig_deg = nx.average_neighbor_degree(G, nodes=train_ids)
     cluster = nx.clustering(H, nodes=train_ids)
-    neigs_class = {}
+    succs_class = {}
+    preds_class = {}
     for id in train_ids:
-        neig_class = np.zeros(28)
+        succ_class = np.zeros(28)
+        pred_class = np.zeros(28)
         for neig in G.neighbors(id):
             if neig in train_ids:
-                neig_class[y_set[y_train[train_ids.index(neig)]]] += 1
-        neigs_class[id] = neig_class
+                succ_class[y_set[y_train[train_ids.index(neig)]]] += 1
+        for neig in G.predecessors(id):
+            if neig in train_ids:
+                pred_class[y_set[y_train[train_ids.index(neig)]]] += 1
+        succs_class[id] = succ_class
+        preds_class[id] = pred_class
 
-    X_train = np.zeros((n_train, 4+class_num))
+    X_train = np.zeros((n_train, 4+class_num*2))
     for i in range(n_train):
     	X_train[i,0] = G.out_degree(train_ids[i])
     	X_train[i,1] = G.in_degree(train_ids[i])
     	X_train[i,2] = avg_neig_deg[train_ids[i]]
         X_train[i,3] = cluster[train_ids[i]]
         for a in range(class_num):
-            X_train[i,4+a] = neigs_class[train_ids[i]][a]
+            X_train[i,4+a] = succs_class[train_ids[i]][a]
+        for a in range(class_num):
+            X_train[i,4+class_num+a] = preds_class[train_ids[i]][a]
 
     # Read test data
     test_ids = list()
@@ -72,22 +80,31 @@ def graph_feature():
     n_test = len(test_ids)
     avg_neig_deg = nx.average_neighbor_degree(G, nodes=test_ids)
     cluster = nx.clustering(H, nodes=test_ids)
-    neigs_class = {}
+    succs_class = {}
+    preds_class = {}
+
     for id in test_ids:
-        neig_class = np.zeros(28)
+        succ_class = np.zeros(28)
+        pred_class = np.zeros(28)
         for neig in G.neighbors(id):
             if neig in train_ids:
-                neig_class[y_set[y_train[train_ids.index(neig)]]] += 1
-        neigs_class[id] = neig_class
+                succ_class[y_set[y_train[train_ids.index(neig)]]] += 1
+        succs_class[id] = succ_class
+        for neig in G.predecessors(id):
+            if neig in train_ids:
+                pred_class[y_set[y_train[train_ids.index(neig)]]] += 1
+        preds_class[id] = pred_class
 
-    X_test = np.zeros((n_test, 4+class_num))
+    X_test = np.zeros((n_test, 4+class_num*2))
     for i in range(n_test):
     	X_test[i,0] = G.out_degree(test_ids[i])
     	X_test[i,1] = G.in_degree(test_ids[i])
     	X_test[i,2] = avg_neig_deg[test_ids[i]]
         X_test[i,3] = cluster[test_ids[i]]
         for a in range(class_num):
-            X_test[i,4+a] = neigs_class[test_ids[i]][a]
+            X_test[i,4+a] = succs_class[test_ids[i]][a]
+        for a in range(class_num):
+            X_test[i,4+class_num+a] = preds_class[test_ids[i]][a]
 
 
     print("Train matrix dimensionality: (%d, %d)" % (X_train.shape[0], X_train.shape[1]))
