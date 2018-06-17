@@ -39,13 +39,13 @@ with open('test.csv', 'r') as f:
     for line in f:
         test_ids.append(line[:-2])
 
-clf2.fit(X_train, y_train)
-y_pred = clf2.predict_proba(X_test)
+eclf.fit(X_train, y_train)
+y_pred = eclf.predict_proba(X_test)
 
 # Write predictions to a file
 with open('sample_submission.csv', 'w') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
-    lst = clf2.classes_.tolist()
+    lst = eclf.classes_.tolist()
     lst.insert(0, "Article")
     writer.writerow(lst)
     for i,test_id in enumerate(test_ids):
