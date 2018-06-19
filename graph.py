@@ -20,6 +20,7 @@ def graph_feature():
             train_ids.append(t[0])
             y_train.append(t[1][:-1])
 
+    # number of classes
     n_train = len(train_ids)
     unique = np.unique(y_train)
     y_set = {}
@@ -32,15 +33,10 @@ def graph_feature():
     # Use the following 32 features for each article:
     # (1) out-degree of node
     # (2) in-degree of node
-    # (3) average degree of neighborhood of node
+    # (3) average degree of neighbors of node
     # (4) clustering coefficient of node
-    # (5)-(32) class of node's neighbors
-
-    # out_deg_cent = nx.out_degree_centrality(G)
-    # in_deg_cent = nx.in_degree_centrality(G)
-    # deg_cent_init = nx.degree_centrality(G)
-    # deg_sum = sum(deg_cent_init.values())
-    # deg_cent = {k: 10000*v/deg_sum for k, v in deg_cent_init.items()}
+    # (5)-(32) class of node's successors
+    # (33)-(60) class of node's predecessors
 
     avg_neig_deg = nx.average_neighbor_degree(G, nodes=train_ids)
     cluster = nx.clustering(H, nodes=train_ids)

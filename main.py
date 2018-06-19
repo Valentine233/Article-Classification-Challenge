@@ -24,10 +24,11 @@ X_test = hstack((X_test_graph, X_test_text))
 # X_test = X_test_graph
 
 # Use voting to classify the articles of the test set
-clf1 = LogisticRegression(random_state=1)
-clf2 = xgb.XGBClassifier()
-eclf = VotingClassifier(estimators=[('lr', clf1), ('xgb', clf2)], voting='soft')
+clf1 = LogisticRegression(random_state=1) # Logistic Regression
+clf2 = xgb.XGBClassifier() # Xgboost
+eclf = VotingClassifier(estimators=[('lr', clf1), ('xgb', clf2)], voting='soft') # ensemble of Logistic Regression and Xgboost
 
+# Cross Validation
 # for clf, label in zip([clf1, clf2, eclf], ['Logistic Regression', 'Xgboost', 'Ensemble']):
 #     scores = cross_val_score(clf, X_train, y_train, cv=3, scoring='log_loss')
 #     print("Log loss: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label))

@@ -36,6 +36,7 @@ def text_feature():
     authors = list(authors)
     n_author = len(authors)
 
+    # token counts of authors' names
     def mapau(s):
         l = s.split(',')
         l = [i.strip() for i in l]
@@ -54,21 +55,16 @@ def text_feature():
         train_titles.append(df.loc[df['id'] == int(i)]['title'].iloc[0])
         train_authors.append(mapau(str(df.loc[df['id'] == int(i)]['authors'].iloc[0])))
 
-    # Create the training matrix. Each row corresponds to an article
-    # and each column to a word present in at least 2 webpages and at
-    # most 50 articles. The value of each entry in a row is equal to
-    # the frequency of that word in the corresponding article
     # count_vec = CountVectorizer(decode_error='ignore', min_df=2, max_df=50, stop_words='english')
-
     tfidf_vec1 = TfidfVectorizer(decode_error='ignore', min_df=2, max_df=0.9, ngram_range=(2, 5), analyzer='char', stop_words='english')
     tfidf_vec3 = TfidfVectorizer(decode_error='ignore', min_df=2, max_df=0.9, ngram_range=(1, 3), analyzer='word', stop_words='english')
     tfidf_vec2 = TfidfVectorizer(decode_error='ignore', min_df=2, max_df=0.9, ngram_range=(2, 5), analyzer='char', stop_words='english')
     tfidf_vec4 = TfidfVectorizer(decode_error='ignore', min_df=2, max_df=0.9, ngram_range=(1, 3), analyzer='word', stop_words='english')
-    TrainAbstracts = tfidf_vec1.fit_transform(train_abstracts)
-    wTrainAbstracts = tfidf_vec3.fit_transform(train_abstracts)
-    TrainTitles = tfidf_vec2.fit_transform(train_titles)
-    wTrainTitles = tfidf_vec4.fit_transform(train_titles)
-    TrainAuthors = sparse.csr_matrix(train_authors)
+    TrainAbstracts = tfidf_vec1.fit_transform(train_abstracts) # TF-IDF features of abstracts with ’char’ analyzer and n-gram from 2 to 5
+    wTrainAbstracts = tfidf_vec3.fit_transform(train_abstracts) # TF-IDF features of abstracts with ’word’ analyzer and n-gram from 1 to 3
+    TrainTitles = tfidf_vec2.fit_transform(train_titles) # TF-IDF features of titles with ’char’ analyzer and n-gram from 2 to 5
+    wTrainTitles = tfidf_vec4.fit_transform(train_titles) # TF-IDF features of titles with ’word’ analyzer and n-gram from 1 to 3
+    TrainAuthors = sparse.csr_matrix(train_authors) # Token counts of authors’ name
     X_train = hstack((TrainAbstracts, TrainTitles, wTrainAbstracts, wTrainTitles, TrainAuthors))
 
     # Read test data
@@ -95,7 +91,7 @@ def text_feature():
     wTestTitles = tfidf_vec4.transform(test_titles)
     TestAuthors = sparse.csr_matrix(test_authors)
     X_test = hstack((TestAbstracts, TestTitles, wTestAbstracts, wTestTitles, TestAuthors))
-    
+
     print("Train matrix dimensionality: (%d, %d)" % (X_train.shape[0], X_train.shape[1]))
     print("Test matrix dimensionality: (%d, %d)" % (X_test.shape[0], X_test.shape[1]))
     return X_train, y_train, X_test
